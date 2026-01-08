@@ -1,7 +1,8 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { format } from 'sql-formatter';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Select,
   SelectContent,
@@ -9,7 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Copy, Check, Sparkles, Trash2, Database } from 'lucide-react';
+import { Copy, Check, Trash2, Database, FileCode, FileCheck } from 'lucide-react';
 import { toast } from 'sonner';
 
 type Dialect = 'postgresql' | 'mysql' | 'plsql' | 'transactsql';
@@ -47,6 +48,7 @@ export function SQLFormatter() {
   const [inputSQL, setInputSQL] = useState('');
   const [outputSQL, setOutputSQL] = useState('');
   const [copied, setCopied] = useState(false);
+  const [activeTab, setActiveTab] = useState('original');
   const [options, setOptions] = useState<FormatterOptions>({
     dialect: 'postgresql',
     keywordCase: 'upper',
@@ -56,7 +58,7 @@ export function SQLFormatter() {
 
   const formatSQL = useCallback(() => {
     if (!inputSQL.trim()) {
-      toast.error('Por favor, insira uma consulta SQL');
+      setOutputSQL('');
       return;
     }
 
@@ -69,12 +71,18 @@ export function SQLFormatter() {
         linesBetweenQueries: 2,
       });
       setOutputSQL(formatted);
-      toast.success('SQL formatado com sucesso!');
     } catch (error) {
       console.error('Format error:', error);
       toast.error('Erro ao formatar SQL. Verifique a sintaxe.');
     }
   }, [inputSQL, options]);
+
+  // Auto-format when switching to formatted tab or when options change while on formatted tab
+  useEffect(() => {
+    if (activeTab === 'formatted' && inputSQL.trim()) {
+      formatSQL();
+    }
+  }, [activeTab, options, formatSQL]);
 
   const copyToClipboard = useCallback(async () => {
     if (!outputSQL) return;
@@ -118,7 +126,7 @@ export function SQLFormatter() {
           </p>
         </header>
 
-        {/* Options Bar */}
+        {/* Action Buttons */}
         <div className="glass-card p-4 mb-6 animate-slide-up">
           <div className="flex flex-wrap items-center gap-4">
             <div className="flex items-center gap-2">
@@ -142,43 +150,7 @@ export function SQLFormatter() {
                 </SelectContent>
               </Select>
             </div>
-
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-muted-foreground">Keywords:</span>
-              <Select
-                value={options.keywordCase}
-                onValueChange={(value: KeywordCase) => setOptions(prev => ({ ...prev, keywordCase: value }))}
-              >
-                <SelectTrigger className="w-36 bg-secondary border-border">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="upper">MAIÚSCULAS</SelectItem>
-                  <SelectItem value="lower">minúsculas</SelectItem>
-                  <SelectItem value="preserve">Preservar</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-muted-foreground">Indentação:</span>
-              <Select
-                value={options.indentStyle}
-                onValueChange={(value: 'standard' | 'tabularLeft' | 'tabularRight') => 
-                  setOptions(prev => ({ ...prev, indentStyle: value }))
-                }
-              >
-                <SelectTrigger className="w-36 bg-secondary border-border">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="standard">Padrão</SelectItem>
-                  <SelectItem value="tabularLeft">Tabular Esq.</SelectItem>
-                  <SelectItem value="tabularRight">Tabular Dir.</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
+            
             <div className="ml-auto flex items-center gap-2">
               <Button
                 variant="outline"
@@ -201,69 +173,101 @@ export function SQLFormatter() {
           </div>
         </div>
 
-        {/* Main Content */}
-        <div className="grid lg:grid-cols-2 gap-6 animate-slide-up" style={{ animationDelay: '0.1s' }}>
-          {/* Input Panel */}
-          <div className="glass-card p-5 flex flex-col">
-            <div className="flex items-center justify-between mb-3">
-              <h2 className="text-lg font-semibold flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-warning animate-pulse-glow" />
+        {/* Main Content with Tabs */}
+        <div className="glass-card p-5 animate-slide-up" style={{ animationDelay: '0.1s' }}>
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+            <TabsList className="grid w-full grid-cols-2 mb-4">
+              <TabsTrigger value="original" className="flex items-center gap-2">
+                <FileCode className="w-4 h-4" />
                 SQL Original
-              </h2>
-              <span className="text-xs text-muted-foreground">
-                {inputSQL.length} caracteres
-              </span>
-            </div>
-            <Textarea
-              value={inputSQL}
-              onChange={(e) => setInputSQL(e.target.value)}
-              placeholder="Cole sua consulta SQL aqui..."
-              className="flex-1 min-h-[400px] font-mono text-sm bg-secondary/50 border-border resize-none scrollbar-thin focus:ring-2 focus:ring-primary/50"
-            />
-          </div>
-
-          {/* Output Panel */}
-          <div className="glass-card p-5 flex flex-col">
-            <div className="flex items-center justify-between mb-3">
-              <h2 className="text-lg font-semibold flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-success" />
+              </TabsTrigger>
+              <TabsTrigger value="formatted" className="flex items-center gap-2">
+                <FileCheck className="w-4 h-4" />
                 SQL Formatado
-              </h2>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={copyToClipboard}
-                disabled={!outputSQL}
-                className="hover:bg-primary/20 hover:text-primary disabled:opacity-50"
-              >
-                {copied ? (
-                  <Check className="w-4 h-4 mr-1 text-success" />
-                ) : (
-                  <Copy className="w-4 h-4 mr-1" />
-                )}
-                {copied ? 'Copiado!' : 'Copiar'}
-              </Button>
-            </div>
-            <div className="flex-1 min-h-[400px] code-editor overflow-auto scrollbar-thin whitespace-pre-wrap">
-              {outputSQL || (
-                <span className="text-muted-foreground italic">
-                  O SQL formatado aparecerá aqui...
-                </span>
-              )}
-            </div>
-          </div>
-        </div>
+              </TabsTrigger>
+            </TabsList>
 
-        {/* Format Button */}
-        <div className="flex justify-center mt-8">
-          <Button
-            size="lg"
-            onClick={formatSQL}
-            className="glow-effect bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-6 text-lg font-semibold rounded-xl transition-all duration-300 hover:scale-105"
-          >
-            <Sparkles className="w-5 h-5 mr-2" />
-            Formatar SQL
-          </Button>
+            <TabsContent value="original" className="mt-0">
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-xs text-muted-foreground">
+                  {inputSQL.length} caracteres
+                </span>
+              </div>
+              <Textarea
+                value={inputSQL}
+                onChange={(e) => setInputSQL(e.target.value)}
+                placeholder="Cole sua consulta SQL aqui..."
+                className="min-h-[450px] font-mono text-sm bg-secondary/50 border-border resize-none scrollbar-thin focus:ring-2 focus:ring-primary/50"
+              />
+            </TabsContent>
+
+            <TabsContent value="formatted" className="mt-0">
+              {/* Formatting Options */}
+              <div className="flex flex-wrap items-center gap-4 mb-4 p-3 rounded-lg bg-secondary/30 border border-border">
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-muted-foreground">Keywords:</span>
+                  <Select
+                    value={options.keywordCase}
+                    onValueChange={(value: KeywordCase) => setOptions(prev => ({ ...prev, keywordCase: value }))}
+                  >
+                    <SelectTrigger className="w-36 bg-secondary border-border">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="upper">MAIÚSCULAS</SelectItem>
+                      <SelectItem value="lower">minúsculas</SelectItem>
+                      <SelectItem value="preserve">Preservar</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-muted-foreground">Indentação:</span>
+                  <Select
+                    value={options.indentStyle}
+                    onValueChange={(value: 'standard' | 'tabularLeft' | 'tabularRight') => 
+                      setOptions(prev => ({ ...prev, indentStyle: value }))
+                    }
+                  >
+                    <SelectTrigger className="w-36 bg-secondary border-border">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="standard">Padrão</SelectItem>
+                      <SelectItem value="tabularLeft">Tabular Esq.</SelectItem>
+                      <SelectItem value="tabularRight">Tabular Dir.</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="ml-auto">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={copyToClipboard}
+                    disabled={!outputSQL}
+                    className="hover:bg-primary/20 hover:text-primary disabled:opacity-50"
+                  >
+                    {copied ? (
+                      <Check className="w-4 h-4 mr-1 text-success" />
+                    ) : (
+                      <Copy className="w-4 h-4 mr-1" />
+                    )}
+                    {copied ? 'Copiado!' : 'Copiar'}
+                  </Button>
+                </div>
+              </div>
+
+              {/* Formatted Output */}
+              <div className="min-h-[400px] code-editor overflow-auto scrollbar-thin whitespace-pre-wrap">
+                {outputSQL || (
+                  <span className="text-muted-foreground italic">
+                    {inputSQL.trim() ? 'Formatando...' : 'Insira uma consulta SQL na aba "SQL Original"'}
+                  </span>
+                )}
+              </div>
+            </TabsContent>
+          </Tabs>
         </div>
 
         {/* Footer */}
