@@ -62,6 +62,22 @@ export function SQLFormatter() {
       return;
     }
 
+    // Configuração de parâmetros específicos por dialeto
+    const getParamTypes = (dialect: Dialect) => {
+      switch (dialect) {
+        case 'postgresql':
+          return { named: [':' as const], positional: true, numbered: ['$' as const] };
+        case 'plsql':
+          return { named: [':' as const], positional: false };
+        case 'mysql':
+          return { positional: true };
+        case 'transactsql':
+          return { positional: false };
+        default:
+          return {};
+      }
+    };
+
     try {
       const formatted = format(inputSQL, {
         language: options.dialect,
@@ -71,20 +87,34 @@ export function SQLFormatter() {
         linesBetweenQueries: 2,
         denseOperators: false,
         newlineBeforeSemicolon: false,
+        paramTypes: getParamTypes(options.dialect),
       });
       setOutputSQL(formatted);
     } catch (error) {
       console.error('Format error:', error);
-      // Tenta formatar sem especificações avançadas como fallback
+      // Fallback: tenta formatar com configurações mínimas
       try {
         const fallbackFormatted = format(inputSQL, {
           language: options.dialect,
           keywordCase: options.keywordCase,
           tabWidth: options.tabWidth,
+          paramTypes: getParamTypes(options.dialect),
         });
         setOutputSQL(fallbackFormatted);
-      } catch {
-        toast.error('Erro ao formatar SQL. Verifique a sintaxe.');
+      } catch (fallbackError) {
+        console.error('Fallback format error:', fallbackError);
+        // Último recurso: formatar como SQL genérico
+        try {
+          const genericFormatted = format(inputSQL, {
+            language: 'sql',
+            keywordCase: options.keywordCase,
+            tabWidth: options.tabWidth,
+          });
+          setOutputSQL(genericFormatted);
+          toast.warning('Formatado como SQL genérico. Algumas sintaxes específicas podem não ser reconhecidas.');
+        } catch {
+          toast.error('Erro ao formatar SQL. Verifique a sintaxe.');
+        }
       }
     }
   }, [inputSQL, options]);
