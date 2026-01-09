@@ -69,11 +69,23 @@ export function SQLFormatter() {
         indentStyle: options.indentStyle,
         tabWidth: options.tabWidth,
         linesBetweenQueries: 2,
+        denseOperators: false,
+        newlineBeforeSemicolon: false,
       });
       setOutputSQL(formatted);
     } catch (error) {
       console.error('Format error:', error);
-      toast.error('Erro ao formatar SQL. Verifique a sintaxe.');
+      // Tenta formatar sem especificações avançadas como fallback
+      try {
+        const fallbackFormatted = format(inputSQL, {
+          language: options.dialect,
+          keywordCase: options.keywordCase,
+          tabWidth: options.tabWidth,
+        });
+        setOutputSQL(fallbackFormatted);
+      } catch {
+        toast.error('Erro ao formatar SQL. Verifique a sintaxe.');
+      }
     }
   }, [inputSQL, options]);
 
@@ -126,7 +138,7 @@ export function SQLFormatter() {
           </p>
         </header>
 
-        {/* Action Buttons */}
+        {/* Configuration Options */}
         <div className="glass-card p-4 mb-6 animate-slide-up">
           <div className="flex flex-wrap items-center gap-4">
             <div className="flex items-center gap-2">
@@ -147,6 +159,42 @@ export function SQLFormatter() {
                       </span>
                     </SelectItem>
                   ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-muted-foreground">Keywords:</span>
+              <Select
+                value={options.keywordCase}
+                onValueChange={(value: KeywordCase) => setOptions(prev => ({ ...prev, keywordCase: value }))}
+              >
+                <SelectTrigger className="w-36 bg-secondary border-border">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="upper">MAIÚSCULAS</SelectItem>
+                  <SelectItem value="lower">minúsculas</SelectItem>
+                  <SelectItem value="preserve">Preservar</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-muted-foreground">Indentação:</span>
+              <Select
+                value={options.indentStyle}
+                onValueChange={(value: 'standard' | 'tabularLeft' | 'tabularRight') => 
+                  setOptions(prev => ({ ...prev, indentStyle: value }))
+                }
+              >
+                <SelectTrigger className="w-36 bg-secondary border-border">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="standard">Padrão</SelectItem>
+                  <SelectItem value="tabularLeft">Tabular Esq.</SelectItem>
+                  <SelectItem value="tabularRight">Tabular Dir.</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -202,64 +250,28 @@ export function SQLFormatter() {
             </TabsContent>
 
             <TabsContent value="formatted" className="mt-0">
-              {/* Formatting Options */}
-              <div className="flex flex-wrap items-center gap-4 mb-4 p-3 rounded-lg bg-secondary/30 border border-border">
-                <div className="flex items-center gap-2">
-                  <span className="text-sm text-muted-foreground">Keywords:</span>
-                  <Select
-                    value={options.keywordCase}
-                    onValueChange={(value: KeywordCase) => setOptions(prev => ({ ...prev, keywordCase: value }))}
-                  >
-                    <SelectTrigger className="w-36 bg-secondary border-border">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="upper">MAIÚSCULAS</SelectItem>
-                      <SelectItem value="lower">minúsculas</SelectItem>
-                      <SelectItem value="preserve">Preservar</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="flex items-center gap-2">
-                  <span className="text-sm text-muted-foreground">Indentação:</span>
-                  <Select
-                    value={options.indentStyle}
-                    onValueChange={(value: 'standard' | 'tabularLeft' | 'tabularRight') => 
-                      setOptions(prev => ({ ...prev, indentStyle: value }))
-                    }
-                  >
-                    <SelectTrigger className="w-36 bg-secondary border-border">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="standard">Padrão</SelectItem>
-                      <SelectItem value="tabularLeft">Tabular Esq.</SelectItem>
-                      <SelectItem value="tabularRight">Tabular Dir.</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="ml-auto">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={copyToClipboard}
-                    disabled={!outputSQL}
-                    className="hover:bg-primary/20 hover:text-primary disabled:opacity-50"
-                  >
-                    {copied ? (
-                      <Check className="w-4 h-4 mr-1 text-success" />
-                    ) : (
-                      <Copy className="w-4 h-4 mr-1" />
-                    )}
-                    {copied ? 'Copiado!' : 'Copiar'}
-                  </Button>
-                </div>
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-xs text-muted-foreground">
+                  {outputSQL.length} caracteres
+                </span>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={copyToClipboard}
+                  disabled={!outputSQL}
+                  className="hover:bg-primary/20 hover:text-primary disabled:opacity-50"
+                >
+                  {copied ? (
+                    <Check className="w-4 h-4 mr-1 text-success" />
+                  ) : (
+                    <Copy className="w-4 h-4 mr-1" />
+                  )}
+                  {copied ? 'Copiado!' : 'Copiar'}
+                </Button>
               </div>
 
               {/* Formatted Output */}
-              <div className="min-h-[400px] code-editor overflow-auto scrollbar-thin whitespace-pre-wrap">
+              <div className="min-h-[450px] code-editor overflow-auto scrollbar-thin whitespace-pre-wrap">
                 {outputSQL || (
                   <span className="text-muted-foreground italic">
                     {inputSQL.trim() ? 'Formatando...' : 'Insira uma consulta SQL na aba "SQL Original"'}
