@@ -242,7 +242,7 @@ export function SQLFormatter() {
             <div className="flex items-center gap-2 bg-secondary/50 p-1.5 rounded-lg border border-border/50">
               <Globe className="w-4 h-4 text-muted-foreground" />
               <Select
-                value={i18n.language}
+                value={i18n.language?.split('-')[0]}
                 onValueChange={(value) => i18n.changeLanguage(value)}
               >
                 <SelectTrigger className="h-8 w-[140px] border-none bg-transparent focus:ring-0 shadow-none text-xs">

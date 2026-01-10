@@ -16,14 +16,25 @@ i18n
     .init({
         resources: {
             'en': { translation: enUS },
+            'en-US': { translation: enUS },
             'pt': { translation: ptBR },
+            'pt-BR': { translation: ptBR },
             'de': { translation: deDE },
+            'de-DE': { translation: deDE },
             'fr': { translation: frFR },
+            'fr-FR': { translation: frFR },
             'zh': { translation: zhCN },
+            'zh-CN': { translation: zhCN },
             'ja': { translation: jaJP },
-            'es': { translation: esES }
+            'ja-JP': { translation: jaJP },
+            'es': { translation: esES },
+            'es-ES': { translation: esES }
         },
         fallbackLng: 'en',
+        detection: {
+            order: ['navigator', 'htmlTag', 'path', 'subdomain'],
+            caches: ['localStorage']
+        },
         interpolation: {
             escapeValue: false // react already safes from xss
         }
