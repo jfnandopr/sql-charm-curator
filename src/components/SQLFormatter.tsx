@@ -622,10 +622,11 @@ export function SQLFormatter() {
                     customStyle={{
                       margin: 0,
                       padding: '1.5rem',
-                      background: 'transparent',
-                      fontSize: '0.875rem',
+                      background: '#fff',
+                      fontSize: '1.2em',
                       lineHeight: '1.5',
                       minHeight: '450px',
+                      fontFamily: 'JetBrains Mono, ui-monospace, monospace',
                     }}
                     wrapLines={true}
                     wrapLongLines={true}
