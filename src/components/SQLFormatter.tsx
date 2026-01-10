@@ -22,6 +22,8 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion';
 import { useTranslation } from 'react-i18next';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { vs } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 type Dialect = 'postgresql' | 'mysql' | 'plsql' | 'transactsql' | 'sql' | 'bigquery';
 type KeywordCase = 'preserve' | 'upper' | 'lower';
@@ -563,7 +565,7 @@ export function SQLFormatter() {
         </header>
 
         {/* Main Content with Tabs */}
-        <div className={`glass-card p-5 animate-slide-up transition-opacity duration-300 ${isSidebarOpen ? 'opacity-20 pointer-events-none' : 'opacity-100'}`} style={{ animationDelay: '0.1s' }}>
+        <div className="glass-card p-5 animate-slide-up transition-opacity duration-300 opacity-100" style={{ animationDelay: '0.1s' }}>
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsList className="grid w-full grid-cols-2 mb-4">
               <TabsTrigger value="original" className="flex items-center gap-2">
@@ -612,11 +614,28 @@ export function SQLFormatter() {
               </div>
 
               {/* Formatted Output */}
-              <div className="min-h-[450px] code-editor overflow-auto scrollbar-thin whitespace-pre-wrap">
-                {outputSQL || (
-                  <span className="text-muted-foreground italic">
+              <div className="min-h-[450px] code-editor overflow-hidden rounded-md border border-input bg-muted/30">
+                {outputSQL ? (
+                  <SyntaxHighlighter
+                    language="sql"
+                    style={vs}
+                    customStyle={{
+                      margin: 0,
+                      padding: '1.5rem',
+                      background: 'transparent',
+                      fontSize: '0.875rem',
+                      lineHeight: '1.5',
+                      minHeight: '450px',
+                    }}
+                    wrapLines={true}
+                    wrapLongLines={true}
+                  >
+                    {outputSQL}
+                  </SyntaxHighlighter>
+                ) : (
+                  <div className="p-6 text-muted-foreground italic min-h-[450px]">
                     {inputSQL.trim() ? t('formatting') : t('emptyPlaceholder')}
-                  </span>
+                  </div>
                 )}
               </div>
             </TabsContent>
