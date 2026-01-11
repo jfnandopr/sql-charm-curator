@@ -90,6 +90,22 @@ Run tests with:
 npm test
 ```
 
+## 🐳 Docker
+
+To run the application using Docker:
+
+### 1. Build the image
+```sh
+docker build -t sql-charm-curator .
+```
+
+### 2. Run the container
+```sh
+docker run -p 8080:80 sql-charm-curator
+```
+
+The application will be available at `http://localhost:8080`.
+
 ## 📄 License
 
 TODO: Add license information.
