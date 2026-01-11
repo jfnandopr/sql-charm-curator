@@ -11,7 +11,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
-import { Copy, Check, Trash2, Database, FileCode, FileCheck, Settings2, X, Globe } from 'lucide-react';
+import { Copy, Check, Trash2, Database, FileCode, FileCheck, Settings2, X, Globe, ExternalLink, Github } from 'lucide-react';
 import { toast } from 'sonner';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
@@ -101,6 +101,14 @@ export function SQLFormatter() {
     newlineBeforeSemicolon: false,
   });
 
+  useEffect(() => {
+    document.title = t('seoTitle');
+    const metaDescription = document.querySelector('meta[name="description"]');
+    if (metaDescription) {
+      metaDescription.setAttribute('content', t('seoDescription'));
+    }
+  }, [t]);
+
   const formatSQL = useCallback(() => {
     if (!inputSQL.trim()) {
       setOutputSQL('');
@@ -180,7 +188,7 @@ export function SQLFormatter() {
     if (activeTab === 'formatted' && inputSQL.trim()) {
       formatSQL();
     }
-  }, [activeTab, options, formatSQL]);
+  }, [activeTab, options, formatSQL, inputSQL]);
 
   const copyToClipboard = useCallback(async () => {
     if (!outputSQL) return;
@@ -540,16 +548,16 @@ export function SQLFormatter() {
         </header>
 
         {/* Main Content with Tabs */}
-        <div className="glass-card p-5 animate-slide-up transition-opacity duration-300 opacity-100" style={{ animationDelay: '0.1s' }}>
+        <div className="glass-card p-5 animate-slide-up transition-opacity duration-300 opacity-100 mb-12" style={{ animationDelay: '0.1s' }}>
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsList className="grid w-full grid-cols-2 mb-4">
               <TabsTrigger value="original" className="flex items-center gap-2">
                 <FileCode className="w-4 h-4" />
-                {t('originalSql')}
+                <h2 className="text-sm font-medium">{t('originalSql')}</h2>
               </TabsTrigger>
               <TabsTrigger value="formatted" className="flex items-center gap-2">
                 <FileCheck className="w-4 h-4" />
-                {t('formattedSql')}
+                <h2 className="text-sm font-medium">{t('formattedSql')}</h2>
               </TabsTrigger>
             </TabsList>
 
@@ -564,6 +572,7 @@ export function SQLFormatter() {
                 onChange={(e) => setInputSQL(e.target.value)}
                 placeholder={t('pastePlaceholder')}
                 className="min-h-[450px] font-mono text-sm bg-secondary/50 border-border resize-none scrollbar-thin focus:ring-2 focus:ring-primary/50"
+                aria-label={t('originalSql')}
               />
             </TabsContent>
 
@@ -618,17 +627,110 @@ export function SQLFormatter() {
           </Tabs>
         </div>
 
-        {/* Footer */}
-        <footer className="text-center mt-12 text-muted-foreground text-sm">
-          <p>
-            {t('support')}{' '}
-            {Object.entries(dialectLabels).map(([key, label], index, arr) => (
-              <span key={key}>
-                <span className="text-foreground">{dialectIcons[key as Dialect]} {label}</span>
-                {index < arr.length - 1 && ' • '}
-              </span>
+        {/* SEO Content Section */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-16 animate-fade-in" style={{ animationDelay: '0.2s' }}>
+          <section>
+            <h2 className="text-2xl font-bold mb-4">{t('whyFormatTitle')}</h2>
+            <p className="text-muted-foreground leading-relaxed">
+              {t('whyFormatDescription')}
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-2xl font-bold mb-4">{t('featuresTitle')}</h2>
+            <ul className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <li className="bg-secondary/30 p-4 rounded-lg border border-border/50">
+                <h3 className="font-semibold mb-1">{t('feature1Title')}</h3>
+                <p className="text-xs text-muted-foreground">{t('feature1Desc')}</p>
+              </li>
+              <li className="bg-secondary/30 p-4 rounded-lg border border-border/50">
+                <h3 className="font-semibold mb-1">{t('feature2Title')}</h3>
+                <p className="text-xs text-muted-foreground">{t('feature2Desc')}</p>
+              </li>
+              <li className="bg-secondary/30 p-4 rounded-lg border border-border/50">
+                <h3 className="font-semibold mb-1">{t('feature3Title')}</h3>
+                <p className="text-xs text-muted-foreground">{t('feature3Desc')}</p>
+              </li>
+              <li className="bg-secondary/30 p-4 rounded-lg border border-border/50">
+                <h3 className="font-semibold mb-1">{t('feature4Title')}</h3>
+                <p className="text-xs text-muted-foreground">{t('feature4Desc')}</p>
+              </li>
+            </ul>
+          </section>
+        </div>
+
+        <section className="mb-16 animate-fade-in" style={{ animationDelay: '0.3s' }}>
+          <h2 className="text-2xl font-bold mb-6 text-center">{t('supportedDialects')}</h2>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+            {Object.entries(dialectLabels).map(([key, label]) => (
+              <div key={key} className="flex flex-col items-center p-4 rounded-xl bg-secondary/20 border border-border/50 hover:bg-secondary/40 transition-colors">
+                <span className="text-3xl mb-2">{dialectIcons[key as Dialect]}</span>
+                <span className="font-medium text-sm">{label}</span>
+                <p className="text-[10px] text-center text-muted-foreground mt-2">
+                  {t(`${key}Desc`)}
+                </p>
+              </div>
             ))}
-          </p>
+          </div>
+        </section>
+
+        <section className="max-w-3xl mx-auto mb-16 p-8 rounded-2xl bg-primary/5 border border-primary/10 animate-fade-in" style={{ animationDelay: '0.4s' }}>
+          <h2 className="text-2xl font-bold mb-6 text-center">{t('howToUseTitle')}</h2>
+          <div className="space-y-4 text-muted-foreground">
+            <p>{t('howToUseStep1')}</p>
+            <p>{t('howToUseStep2')}</p>
+            <p>{t('howToUseStep3')}</p>
+            <p>{t('howToUseStep4')}</p>
+          </div>
+        </section>
+
+        {/* Footer */}
+        <footer className="mt-12 pt-8 border-t border-border/50 text-muted-foreground">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+            <div className="space-y-4">
+              <div className="flex items-center gap-2">
+                <Database className="w-6 h-6 text-primary" />
+                <span className="font-bold text-foreground">SQL Formatter</span>
+              </div>
+              <p className="text-sm">
+                {t('seoDescription')}
+              </p>
+            </div>
+            
+            <div className="space-y-4">
+              <h3 className="font-bold text-foreground">{t('links')}</h3>
+              <ul className="space-y-2 text-sm">
+                <li>
+                  <a href="https://github.com/jfmaia/sql-charm-curator" target="_blank" rel="noopener noreferrer" className="hover:text-primary flex items-center gap-2">
+                    <Github className="w-4 h-4" />
+                    {t('sourceCode')}
+                  </a>
+                </li>
+                <li>
+                  <a href="https://jfmaia.site" target="_blank" rel="noopener noreferrer" className="hover:text-primary flex items-center gap-2">
+                    <Globe className="w-4 h-4" />
+                    {t('developer')}
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            <div className="space-y-4">
+              <h3 className="font-bold text-foreground">Legal</h3>
+              <ul className="space-y-2 text-sm">
+                <li>
+                  <a href="#" className="hover:text-primary flex items-center gap-2">
+                    <ExternalLink className="w-4 h-4" />
+                    {t('privacy')}
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+          
+          <div className="text-center text-xs pb-8">
+            <p>© {new Date().getFullYear()} SQL Formatter. Made with ❤️ for developers.</p>
+          </div>
         </footer>
       </div>
     </div>
