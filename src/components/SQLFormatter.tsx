@@ -24,6 +24,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vs } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import { compactWhereClauses } from '@/utils/sql-utils';
 
 type Dialect = 'postgresql' | 'mysql' | 'plsql' | 'transactsql' | 'sql' | 'bigquery';
 type KeywordCase = 'preserve' | 'upper' | 'lower';
@@ -47,32 +48,6 @@ interface FormatterOptions {
   denseOperators: boolean;
   newlineBeforeSemicolon: boolean;
 }
-
-// Pós-processamento para compactar parênteses
-const compactParenthesesFormat = (sql: string): string => {
-  let result = sql.replace(/\(\s*\n\s+/g, '(');
-  result = result.replace(/\n\s+\)/g, ')');
-  return result;
-};
-
-const compactWhereClauses = (sql: string): string => {
-  const clausePattern = /\b(WHERE|GROUP\s+BY|ORDER\s+BY|HAVING|LIMIT|OFFSET|UNION|EXCEPT|INTERSECT|FROM|SELECT|UPDATE|INSERT|DELETE|WITH|VALUES|SET|RETURNING)\b/gi;
-  const parts = sql.split(clausePattern);
-  let result = parts[0];
-
-  for (let i = 1; i < parts.length; i += 2) {
-    const keyword = parts[i];
-    const content = parts[i + 1] || '';
-
-    if (keyword.toUpperCase() === 'WHERE') {
-      result += keyword + compactParenthesesFormat(content);
-    } else {
-      result += keyword + content;
-    }
-  }
-
-  return result;
-};
 
 const dialectLabels: Record<Dialect, string> = {
   postgresql: 'PostgreSQL',
