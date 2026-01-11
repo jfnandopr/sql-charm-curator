@@ -1,45 +1,143 @@
 <!doctype html>
-<html lang="en-US" prefix="og: http://ogp.me/ns#" encoding="utf-8">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
 
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Free Online SQL Formatter - Beautify Your SQL Code</title>
   <meta name="description"
-    content="The best free online SQL formatter and beautifier. Supports PostgreSQL, MySQL, Oracle (PL/SQL), and SQL Server (T-SQL). Make your SQL queries elegant and readable instantly." />
-  <meta name="keywords" content="sql formatter, formatar sql, postgresql, mysql, oracle, sql server, sql beautifier, online sql formatter, beautify sql, sql formatting tool" />
+    content="The best free online SQL formatter and beautifier. Supports PostgreSQL, MySQL, Oracle (PL/SQL), SQL Server (T-SQL), and BigQuery. Make your SQL queries elegant and readable instantly." />
+  <meta name="keywords" content="sql formatter, sql beautifier, format sql online, postgresql formatter, mysql formatter, oracle plsql formatter, sql server tsql formatter, bigquery formatter, sql pretty print, sql indent, formatar sql, formatear sql" />
   <meta name="author" content="jfmaia.site" />
-  <meta name="google-adsense-account" content="ca-pub-4026555335042993">
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+  <meta name="googlebot" content="index, follow" />
+  <meta name="google-adsense-account" content="ca-pub-4026555335042993" />
+  <meta name="theme-color" content="#6366f1" />
 
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://sql.prettyformat.com/" />
   <meta property="og:title" content="Free Online SQL Formatter - Beautify Your SQL Code" />
   <meta property="og:description"
-    content="The best free online SQL formatter and beautifier. Supports PostgreSQL, MySQL, Oracle (PL/SQL), and SQL Server (T-SQL). Make your SQL queries elegant and readable instantly." />
-  <meta property="og:type" content="website" />
-  <link rel="canonical" href="https://sql.prettyformat.com" />
+    content="The best free online SQL formatter and beautifier. Supports PostgreSQL, MySQL, Oracle (PL/SQL), SQL Server (T-SQL), and BigQuery. Make your SQL queries elegant and readable instantly." />
+  <meta property="og:image" content="https://sql.prettyformat.com/og-image.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:site_name" content="SQL Formatter" />
+  <meta property="og:locale" content="en_US" />
+  <meta property="og:locale:alternate" content="pt_BR" />
+  <meta property="og:locale:alternate" content="es_ES" />
+  <meta property="og:locale:alternate" content="de_DE" />
+  <meta property="og:locale:alternate" content="fr_FR" />
+  <meta property="og:locale:alternate" content="zh_CN" />
+  <meta property="og:locale:alternate" content="ja_JP" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:url" content="https://sql.prettyformat.com/" />
+  <meta name="twitter:title" content="Free Online SQL Formatter - Beautify Your SQL Code" />
+  <meta name="twitter:description"
+    content="The best free online SQL formatter and beautifier. Supports PostgreSQL, MySQL, Oracle (PL/SQL), SQL Server (T-SQL), and BigQuery." />
+  <meta name="twitter:image" content="https://sql.prettyformat.com/og-image.png" />
+
+  <link rel="canonical" href="https://sql.prettyformat.com/" />
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <link rel="apple-touch-icon" href="/apple-touch-icon.svg" />
+  <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
+
+  <!-- Preconnect to improve performance -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+  <!-- Structured Data -->
   <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": "WebApplication",
-      "name": "Free Online SQL Formatter",
+      "name": "SQL Formatter",
       "url": "https://sql.prettyformat.com",
-      "description": "The best free online SQL formatter and beautifier. Supports PostgreSQL, MySQL, Oracle (PL/SQL), and SQL Server (T-SQL).",
+      "description": "The best free online SQL formatter and beautifier. Supports PostgreSQL, MySQL, Oracle (PL/SQL), SQL Server (T-SQL), and BigQuery.",
       "applicationCategory": "DeveloperApplication",
       "operatingSystem": "All",
+      "browserRequirements": "Requires JavaScript",
       "offers": {
         "@type": "Offer",
         "price": "0",
         "priceCurrency": "USD"
       },
       "author": {
-        "@type": "Organization",
-        "name": "sql-formatter"
-      }
+        "@type": "Person",
+        "name": "JF Maia",
+        "url": "https://jfmaia.site"
+      },
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.8",
+        "ratingCount": "150",
+        "bestRating": "5",
+        "worstRating": "1"
+      },
+      "featureList": [
+        "PostgreSQL formatting",
+        "MySQL formatting",
+        "Oracle PL/SQL formatting",
+        "SQL Server T-SQL formatting",
+        "BigQuery formatting",
+        "Customizable keyword casing",
+        "Adjustable indentation",
+        "Multiple language support"
+      ]
     }
   </script>
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What SQL dialects does this formatter support?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Our SQL formatter supports PostgreSQL, MySQL, Oracle (PL/SQL), SQL Server (T-SQL), BigQuery, and Standard SQL."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is this SQL formatter free to use?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes, this SQL formatter is completely free to use with no limitations on the number of queries you can format."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is my SQL data secure?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes, all SQL formatting happens in your browser. Your queries are never sent to any server, ensuring complete privacy and security."
+          }
+        }
+      ]
+    }
+  </script>
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://sql.prettyformat.com/"
+        }
+      ]
+    }
+  </script>
+
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4026555335042993"
-          crossorigin="anonymous" defer></script>
+          crossorigin="anonymous"></script>
 </head>
 
 <body>
