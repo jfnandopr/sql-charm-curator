@@ -25,7 +25,6 @@ import {
 import { useTranslation } from 'react-i18next';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vs } from 'react-syntax-highlighter/dist/esm/styles/prism';
-import { compactWhereClauses } from '@/utils/sql-utils';
 
 type Dialect = 'postgresql' | 'mysql' | 'plsql' | 'transactsql' | 'sql' | 'bigquery';
 type KeywordCase = 'preserve' | 'upper' | 'lower';
@@ -45,7 +44,6 @@ interface FormatterOptions {
   useTabs: boolean;
   expressionWidth: number;
   linesBetweenQueries: number;
-  compactParentheses: boolean;
   denseOperators: boolean;
   newlineBeforeSemicolon: boolean;
 }
@@ -95,9 +93,8 @@ export function SQLFormatter() {
     logicalOperatorNewline: 'before',
     tabWidth: 2,
     useTabs: false,
-    expressionWidth: 60,
+    expressionWidth: 120,
     linesBetweenQueries: 2,
-    compactParentheses: true,
     denseOperators: false,
     newlineBeforeSemicolon: false,
   });
@@ -151,8 +148,8 @@ export function SQLFormatter() {
         newlineBeforeSemicolon: options.newlineBeforeSemicolon,
         paramTypes: getParamTypes(options.dialect),
       });
-      const result = options.compactParentheses ? compactWhereClauses(formatted) : formatted;
-      setOutputSQL(result);
+      setOutputSQL(formatted);
+
     } catch (error) {
       console.error('Format error:', error);
       // Fallback: tenta formatar com configurações mínimas
@@ -163,8 +160,7 @@ export function SQLFormatter() {
           tabWidth: options.tabWidth,
           paramTypes: getParamTypes(options.dialect),
         });
-        const result = options.compactParentheses ? compactWhereClauses(fallbackFormatted) : fallbackFormatted;
-        setOutputSQL(result);
+        setOutputSQL(fallbackFormatted);
       } catch (fallbackError) {
         console.error('Fallback format error:', fallbackError);
         // Último recurso: formatar como SQL genérico
@@ -174,8 +170,7 @@ export function SQLFormatter() {
             keywordCase: options.keywordCase,
             tabWidth: options.tabWidth,
           });
-          const result = options.compactParentheses ? compactWhereClauses(genericFormatted) : genericFormatted;
-          setOutputSQL(result);
+          setOutputSQL(genericFormatted);
           toast.warning(t('toastGeneric'));
         } catch {
           toast.error(t('toastError'));
@@ -310,16 +305,6 @@ export function SQLFormatter() {
               </Select>
             </div>
 
-            <div className="flex items-center gap-2 bg-secondary/50 px-3 py-1.5 rounded-lg border border-border/50 h-[50px]">
-              <div className="flex items-center gap-2">
-                <Label htmlFor="compact-parentheses-main" className="text-sm cursor-pointer whitespace-nowrap">{t('compactParentheses')}</Label>
-                <Switch
-                  id="compact-parentheses-main"
-                  checked={options.compactParentheses}
-                  onCheckedChange={(checked) => setOptions(prev => ({ ...prev, compactParentheses: checked }))}
-                />
-              </div>
-            </div>
           </div>
 
           <div className="flex justify-center gap-2 mb-8">
