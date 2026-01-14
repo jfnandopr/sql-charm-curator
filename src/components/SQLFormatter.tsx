@@ -11,7 +11,8 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
-import { Copy, Check, Trash2, Database, FileCode, FileCheck, Settings2, X, Globe, ExternalLink, Github } from 'lucide-react';
+import { Copy, Check, Trash2, Database, FileCode, FileCheck, Settings2, X, Globe, ExternalLink, Github, BookOpen } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
@@ -696,9 +697,39 @@ export function SQLFormatter() {
                 {t('seoDescription')}
               </p>
             </div>
-            
+
             <div className="space-y-4">
-              <h3 className="font-bold text-foreground">{t('links')}</h3>
+              <h3 className="font-bold text-foreground">{t('databaseDocs')}</h3>
+              <ul className="space-y-2 text-sm">
+                <li>
+                  <a href="https://www.postgresql.org/docs/" target="_blank" rel="noopener noreferrer" className="hover:text-primary flex items-center gap-2">
+                    <BookOpen className="w-4 h-4" />
+                    {t('postgresqlDocs')}
+                  </a>
+                </li>
+                <li>
+                  <a href="https://dev.mysql.com/doc/" target="_blank" rel="noopener noreferrer" className="hover:text-primary flex items-center gap-2">
+                    <BookOpen className="w-4 h-4" />
+                    {t('mysqlDocs')}
+                  </a>
+                </li>
+                <li>
+                  <a href="https://docs.oracle.com/en/database/" target="_blank" rel="noopener noreferrer" className="hover:text-primary flex items-center gap-2">
+                    <BookOpen className="w-4 h-4" />
+                    {t('oracleDocs')}
+                  </a>
+                </li>
+                <li>
+                  <a href="https://cloud.google.com/bigquery/docs" target="_blank" rel="noopener noreferrer" className="hover:text-primary flex items-center gap-2">
+                    <BookOpen className="w-4 h-4" />
+                    {t('bigqueryDocs')}
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            <div className="space-y-4">
+              <h3 className="font-bold text-foreground">Links</h3>
               <ul className="space-y-2 text-sm">
                 <li>
                   <a href="https://github.com/jfmaia/sql-charm-curator" target="_blank" rel="noopener noreferrer" className="hover:text-primary flex items-center gap-2">
@@ -712,22 +743,18 @@ export function SQLFormatter() {
                     {t('developer')}
                   </a>
                 </li>
-              </ul>
-            </div>
-
-            <div className="space-y-4">
-              <h3 className="font-bold text-foreground">Legal</h3>
-              <ul className="space-y-2 text-sm">
                 <li>
-                  <a href="#" className="hover:text-primary flex items-center gap-2">
+                  <Link to="/privacy-policy" className="hover:text-primary flex items-center gap-2">
                     <ExternalLink className="w-4 h-4" />
                     {t('privacy')}
-                  </a>
+                  </Link>
                 </li>
               </ul>
             </div>
+
+
           </div>
-          
+
           <div className="text-center text-xs pb-8">
             <p>© {new Date().getFullYear()} SQL Formatter. Made with ❤️ for developers.</p>
           </div>
