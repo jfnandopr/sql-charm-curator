@@ -23,6 +23,8 @@ export default defineConfig(({ mode }) => ({
         drop_debugger: mode === 'production',
       },
     },
+    // Enable source maps for better production debugging and Lighthouse insights
+    sourcemap: true,
     // Enable CSS code splitting
     cssCodeSplit: true,
     // Increase chunk size warning limit (we're handling large chunks intentionally)
@@ -30,7 +32,8 @@ export default defineConfig(({ mode }) => ({
     rollupOptions: {
       output: {
         manualChunks: {
-          'vendor': ['react', 'react-dom', 'react-router-dom', 'lucide-react', '@tanstack/react-query'],
+          'vendor': ['react', 'react-dom', 'react-router-dom', '@tanstack/react-query', 'i18next', 'react-i18next', 'i18next-browser-languagedetector', 'i18next-http-backend'],
+          'icons': ['lucide-react'],
           'formatter': ['sql-formatter'],
           'ui': ['@radix-ui/react-accordion', '@radix-ui/react-label', '@radix-ui/react-select', '@radix-ui/react-switch', '@radix-ui/react-tabs', '@radix-ui/react-tooltip'],
           // Syntax highlighter is now lazy loaded, so it will be in a separate chunk automatically

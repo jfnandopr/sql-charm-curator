@@ -1,5 +1,4 @@
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
+import { lazy, Suspense } from "react";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
@@ -11,14 +10,18 @@ import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
+// Lazy load feedback components
+const Sonner = lazy(() => import('@/components/ui/sonner').then(module => ({ default: module.Toaster })));
+
 import { ThemeProvider } from "@/components/theme-provider";
 
 const App = () => (
   <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <Toaster />
-        <Sonner />
+        <Suspense fallback={null}>
+          <Sonner />
+        </Suspense>
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Index />} />

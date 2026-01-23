@@ -52,6 +52,67 @@
   <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com" />
   <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
 
+  <!-- Critical CSS inline to prevent render blocking -->
+  <style>
+    /* Critical above-the-fold styles */
+    *,
+    ::before,
+    ::after {
+      box-sizing: border-box;
+      border-width: 0;
+      border-style: solid;
+      border-color: hsl(var(--border))
+    }
+
+    html {
+      line-height: 1.5;
+      -webkit-text-size-adjust: 100%;
+      tab-size: 4;
+      font-family: ui-sans-serif, system-ui, sans-serif
+    }
+
+    body {
+      margin: 0;
+      line-height: inherit;
+      font-family: 'Inter', system-ui, sans-serif;
+      background-color: hsl(var(--background));
+      color: hsl(var(--foreground));
+      -webkit-font-smoothing: antialiased
+    }
+
+    :root {
+      --background: 0 0% 100%;
+      --foreground: 222 47% 11%;
+      --card: 0 0% 100%;
+      --card-foreground: 222 47% 11%;
+      --primary: 199 89% 48%;
+      --primary-foreground: 210 40% 98%;
+      --border: 214.3 31.8% 91.4%;
+      --radius: 0.75rem
+    }
+
+    .dark {
+      --background: 222 47% 4%;
+      --foreground: 210 40% 98%;
+      --card: 222 47% 4%;
+      --card-foreground: 210 40% 98%;
+      --primary: 199 89% 48%;
+      --primary-foreground: 210 40% 98%;
+      --border: 222 47% 11%
+    }
+
+    #root {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column
+    }
+
+    /* Prevent layout shift */
+    .font-mono {
+      font-family: 'JetBrains Mono', ui-monospace, monospace
+    }
+  </style>
+
   <!-- Preload critical fonts -->
   <link rel="preload"
     href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap"
@@ -59,6 +120,10 @@
   <link rel="stylesheet"
     href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap"
     media="print" onload="this.media='all'" />
+  <noscript>
+    <link rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" />
+  </noscript>
 
   <!-- Structured Data -->
   <script type="application/ld+json">
@@ -147,16 +212,59 @@
     }
   </script>
 
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4026555335042993"
-    crossorigin="anonymous"></script>
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-EV2WK1EQNE"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag() { dataLayer.push(arguments); }
-    gtag('js', new Date());
+  <link rel="manifest" href="/manifest.json" />
 
-    gtag('config', 'G-EV2WK1EQNE');
+  <!-- Preconnect to critical domains to reduce connection overhead -->
+  <link rel="preconnect" href="https://sql.prettyformat.com" />
+  <link rel="dns-prefetch" href="https://sql.prettyformat.com" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+  <!-- Third-party scripts lazy loader to reduce unused JS and block-time -->
+  <script>
+    (function () {
+      const lazyScripts = [
+        { src: 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4026555335042993', attr: { crossorigin: 'anonymous', defer: '' } },
+        { src: 'https://www.googletagmanager.com/gtag/js?id=G-EV2WK1EQNE', attr: { async: '' } }
+      ];
+
+      let scriptsLoaded = false;
+
+      function loadScripts() {
+        if (scriptsLoaded) return;
+        scriptsLoaded = true;
+
+        lazyScripts.forEach(cfg => {
+          const s = document.createElement('script');
+          s.src = cfg.src;
+          if (cfg.attr) {
+            Object.keys(cfg.attr).forEach(key => s.setAttribute(key, cfg.attr[key]));
+          }
+          document.head.appendChild(s);
+        });
+
+        // Initialize Gtag after loading
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'G-EV2WK1EQNE', {
+          'page_path': window.location.pathname,
+          'send_page_view': true
+        });
+      }
+
+      // Load on first user interaction or after a 5s delay
+      const events = ['mouseover', 'keydown', 'touchmove', 'touchstart', 'scroll'];
+      events.forEach(e => window.addEventListener(e, loadScripts, { once: true, passive: true }));
+      setTimeout(loadScripts, 5000);
+
+      // Register Service Worker for offline support and asset caching
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/service-worker.js');
+        });
+      }
+    })();
   </script>
 </head>
 
@@ -170,7 +278,30 @@
         SQL Server (T-SQL), and BigQuery.</p>
     </div>
   </noscript>
-  <div id="root"></div>
+  <div id="root">
+    <!-- LCP Skeleton to improve perceived performance and eliminate rendering delay -->
+    <div
+      style="min-height: 100vh; display: flex; flex-direction: column; padding: 1.5rem; font-family: 'Inter', system-ui, sans-serif; background-color: #ffffff; color: #1e293b;">
+      <div style="text-align: center; max-width: 800px; margin: 3rem auto 0;">
+        <div style="display: inline-flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem;">
+          <div style="width: 40px; height: 40px; background: #6366f1; border-radius: 0.5rem;"></div>
+          <h1 style="font-size: 2.5rem; font-weight: 800; margin: 0; color: #1e293b; letter-spacing: -0.025em;">
+            SQL Formatter
+          </h1>
+        </div>
+        <p
+          style="font-size: 1.125rem; color: #64748b; line-height: 1.6; margin-bottom: 2.5rem; max-width: 600px; margin-left: auto; margin-right: auto;">
+          The best free online SQL beautifier. Format your queries instantly for PostgreSQL, MySQL, and more.
+        </p>
+        <div
+          style="height: 450px; background: #f8fafc; border-radius: 0.75rem; border: 1px solid #e2e8f0; position: relative;">
+          <div
+            style="position: absolute; top: 1rem; left: 1rem; right: 1rem; height: 2.5rem; background: #f1f5f9; border-radius: 0.375rem;">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
   <script type="module" src="/src/main.tsx"></script>
 </body>
 

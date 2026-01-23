@@ -22,10 +22,12 @@
     --primary-foreground: 210 40% 98%;
 
     --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222 47% 11.2%;
+    --secondary-foreground: 222 47% 5%;
+    /* Darker text */
 
     --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted-foreground: 215.4 25% 35%;
+    /* Darker for better contrast */
 
     --accent: 199 89% 48%;
     --accent-foreground: 210 40% 98%;
@@ -164,11 +166,15 @@
   .glass-card {
     @apply bg-card/80 backdrop-blur-xl border border-border/50 rounded-xl;
     box-shadow: var(--shadow-lg);
+    contain: layout;
+    /* Optimize layout calculation */
   }
 
   .code-editor {
     @apply font-mono text-sm leading-relaxed bg-secondary/50 rounded-lg p-4 border border-border/50;
     tab-size: 2;
+    contain: content;
+    /* Isolate code editor content to prevent global reflows */
   }
 
   .glow-effect {
@@ -252,6 +258,25 @@
       opacity: 1;
       transform: translateY(0);
     }
+  }
+
+  /* Performance Optimizations */
+  .will-change-transform {
+    will-change: transform;
+  }
+
+  .will-change-opacity {
+    will-change: opacity;
+  }
+
+  .contain-paint {
+    contain: paint;
+  }
+
+  /* GPU Acceleration for the sidebar */
+  aside {
+    backface-visibility: hidden;
+    perspective: 1000px;
   }
 
   .scrollbar-thin {
